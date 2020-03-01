@@ -5,12 +5,32 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:AutoVisaConcept"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
+        Title="MainWindow" Height="620" Width="1000">
     <Grid>
-        <DataGrid x:Name="dataGrid" HorizontalAlignment="Left" Height="204" Margin="32,39,0,0" VerticalAlignment="Top" Width="348"/>
-        <ComboBox x:Name="comboBox" HorizontalAlignment="Left" Margin="600,74,0,0" VerticalAlignment="Top" Width="140"/>
-        <Button x:Name="button" Content="Загрузить сканы" Command="{Binding Download}" HorizontalAlignment="Left" Margin="445,65,0,0" VerticalAlignment="Top" Width="94" Height="31"/>
-        <Button x:Name="button1" Content="Внести данные" HorizontalAlignment="Left" Margin="445,164,0,0" VerticalAlignment="Top" Width="94" Height="27"/>
-        <Button x:Name="button2" Content="Удалить" HorizontalAlignment="Left" Margin="649,186,0,0" VerticalAlignment="Top" Width="75"/>
+        <DataGrid x:Name="dataGrid" ItemsSource="{Binding Persons}" SelectionChanged="dataGrid_SelectionChanged" HorizontalAlignment="Left" Height="501" 
+                  AutoGenerateColumns="False" Margin="10,39,0,0" VerticalAlignment="Top" Width="460">
+            <DataGrid.Columns>
+
+                <DataGridTextColumn Header="Фамилия"  Binding="{Binding Surname}"/>
+                <DataGridTextColumn Header="Имя"  Binding="{Binding Name}"/>
+                <DataGridTextColumn Header="Отчество"  Binding="{Binding Patronomic}"/>
+                <DataGridTextColumn Header="Дата рождения"  Binding="{Binding Birthdate}"/>
+                <DataGridTextColumn Header="Номер паспорта"  Binding="{Binding Passport_id}"/>
+            </DataGrid.Columns>
+        </DataGrid>
+        <ComboBox x:Name="comboBox" HorizontalAlignment="Left" Margin="827,50,0,0" VerticalAlignment="Top" Width="140"/>
+        <Button x:Name="button" Content="Загрузить сканы" Command="{Binding Download}" HorizontalAlignment="Left" Margin="681,41,0,0" VerticalAlignment="Top" Width="94" Height="31"/>
+        <Button x:Name="button1" Content="Внести данные" Command="{Binding Proceed_data}" HorizontalAlignment="Left" Margin="873,96,0,0" VerticalAlignment="Top" Width="94" Height="27"/>
+        <Button x:Name="button2" Content="Удалить" HorizontalAlignment="Left" Margin="827,148,0,0" VerticalAlignment="Top" Width="75"/>
+        <Image x:Name="image"  HorizontalAlignment="Left" Height="441" Margin="474,110,0,0" VerticalAlignment="Top" Width="348" RenderTransformOrigin="0.5,0.5">
+            <Image.RenderTransform>
+                <TransformGroup>
+                    <ScaleTransform/>
+                    <SkewTransform AngleY="0.226"/>
+                    <RotateTransform/>
+                    <TranslateTransform Y="-0.619"/>
+                </TransformGroup>
+            </Image.RenderTransform>
+        </Image>
     </Grid>
-</Window>
+</Window> 
