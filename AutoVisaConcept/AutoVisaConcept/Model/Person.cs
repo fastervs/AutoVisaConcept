@@ -2,6 +2,7 @@
 using Npgsql;
 using System;
 using System.Collections.Generic;
+using System.Data.SQLite;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -16,7 +17,7 @@ namespace AutoVisaConcept.Model
 
         SelenuimVisa SelenuimActions;
 
-        BDcontext connection=new BDcontext();
+        SQLiteConnection connection;
 
         public string FilePath
         {
@@ -77,11 +78,11 @@ namespace AutoVisaConcept.Model
 
 
 
-        public Person(string FilePath1,BDcontext connection1,SelenuimVisa selenium_instance)
+        public Person(string FilePath1, SQLiteConnection connection1 ,SelenuimVisa selenium_instance)
         {
             //FilePath = FilePath1;
             Application.Current.Dispatcher.Invoke(() => this.FilePath = FilePath1);
-            //connection = connection1;
+            connection = connection1;
             SelenuimActions = selenium_instance;
         }
 
@@ -130,23 +131,26 @@ namespace AutoVisaConcept.Model
                 }
             });
 
-        public async Task Add_todb()
-             => await Task.Run(() =>
-             {
-                 connection.BDcontextinit();
-                 connection.conn.Open();
-                 using (var cmd = new NpgsqlCommand("INSERT INTO persons (surname,name,patronomic,birthdate,passport_id) VALUES (@a,@b,@c,@d,@e)", connection.conn))
-                 {
-                     
-                     cmd.Parameters.AddWithValue("a", Application.Current.Dispatcher.Invoke(() => Surname));
-                     cmd.Parameters.AddWithValue("b", Application.Current.Dispatcher.Invoke(() => Name));
-                     cmd.Parameters.AddWithValue("c", Application.Current.Dispatcher.Invoke(() => Patronomic));
-                     cmd.Parameters.AddWithValue("d", DateTime.Parse(Application.Current.Dispatcher.Invoke(() => Birthdate)));
-                     cmd.Parameters.AddWithValue("e", Application.Current.Dispatcher.Invoke(() => Passport_id));
-                     cmd.ExecuteNonQuery();
-                 }
-                 connection.conn.Close();
-             });
+        public Task Add_todb()
+            => Task.Run(() =>
+            {
+
+                using (var cmd = new SQLiteCommand("INSERT INTO Persons (surname,name,patronomic,birthdate,passport_id) VALUES (@a,@b,@c,@d,@e)", connection))
+                {
+
+                    cmd.Parameters.AddWithValue("a", Application.Current.Dispatcher.Invoke(() => Surname));
+                    cmd.Parameters.AddWithValue("b", Application.Current.Dispatcher.Invoke(() => Name));
+                    cmd.Parameters.AddWithValue("c", Application.Current.Dispatcher.Invoke(() => Patronomic));
+                    try
+                    {
+                        cmd.Parameters.AddWithValue("d", DateTime.Parse(Application.Current.Dispatcher.Invoke(() => Birthdate)));
+                    }
+                    catch { cmd.Parameters.AddWithValue("d", null); }
+                    cmd.Parameters.AddWithValue("e", Application.Current.Dispatcher.Invoke(() => Passport_id));
+                    cmd.ExecuteNonQuery();
+                }
+
+            });
 
         public async Task Get_visa()
              => await Task.Run(() =>

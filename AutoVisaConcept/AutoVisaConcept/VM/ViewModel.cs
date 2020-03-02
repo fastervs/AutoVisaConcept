@@ -13,6 +13,7 @@ using System.Windows.Data;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using Npgsql;
+using System.Data.SQLite;
 
 namespace AutoVisaConcept.VM
 {
@@ -26,14 +27,15 @@ namespace AutoVisaConcept.VM
 
         public Person temp;
 
-        BDcontext connection;
+        SQLiteConnection connection;
+
+        private string dbFileName="Persons.sqlite";
 
         SelenuimVisa SelenuimActions=new SelenuimVisa();
 
         private readonly object _urlsLock = new object();
 
         private int _barvalue = 0;//Текущее значение для progressbar
-
         
 
         public int Barvalue
@@ -51,7 +53,33 @@ namespace AutoVisaConcept.VM
             //
             Persons = new ObservableCollection<Person>();
             BindingOperations.EnableCollectionSynchronization(Persons, _urlsLock);
-            connection = new BDcontext();
+            ////////////////////////////////////////////////////////////////////////////
+            db_handle();
+        }
+
+        void db_handle()
+        {
+            if (!File.Exists(dbFileName ))
+                SQLiteConnection.CreateFile(dbFileName);
+
+            try
+            {
+                connection = new SQLiteConnection("Data Source=" + dbFileName + ";Version=3;");
+                connection.Open();
+                SQLiteCommand m_sqlCmd=new SQLiteCommand();
+                m_sqlCmd.Connection = connection;
+
+                m_sqlCmd.CommandText = "CREATE TABLE IF NOT EXISTS Persons (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT," +
+                    " surname TEXT,patronomic TEXT,birthdate DATETIME,passport_id INTEGER)";
+
+                m_sqlCmd.ExecuteNonQuery();
+
+            }
+            catch (SQLiteException ex)
+            {
+                //lbStatusText.Text = "Disconnected";
+                //MessageBox.Show("Error: " + ex.Message);
+            }
         }
 
         public async Task OpenFileDialog()
