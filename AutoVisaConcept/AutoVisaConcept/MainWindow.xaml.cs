@@ -22,19 +22,14 @@ namespace AutoVisaConcept
     public partial class MainWindow : Window
     {
         int selected_index = -1;
-        ViewModel VM = new ViewModel();
+        Repository VM = new Repository();
         public MainWindow()
         {
             InitializeComponent();
             
-            DataContext = VM;
+            DataContext = VM;            
             
-            
-            //dataGrid.SelectedIndex
-            //image.Source=dataGrid.SelectedItem.
         }
-
-        
 
         private void dataGrid_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {

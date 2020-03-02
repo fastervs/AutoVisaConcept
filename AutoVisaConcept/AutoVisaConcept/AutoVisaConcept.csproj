@@ -107,7 +107,7 @@
     <Compile Include="Model\Person.cs" />
     <Compile Include="Relay_command.cs" />
     <Compile Include="SelenuimVisa.cs" />
-    <Compile Include="VM\ViewModel.cs" />
+    <Compile Include="Repository%28vm%29\Repository.cs" />
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>

@@ -14,10 +14,11 @@ using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using Npgsql;
 using System.Data.SQLite;
+using System.Windows;
 
 namespace AutoVisaConcept.VM
 {
-    class ViewModel: INotifyPropertyChanged
+    class Repository: INotifyPropertyChanged
     {
         private Relay_Command _download;
 
@@ -48,7 +49,7 @@ namespace AutoVisaConcept.VM
             }
         }
 
-        public ViewModel()
+        public Repository()
         {
             //
             Persons = new ObservableCollection<Person>();
@@ -107,8 +108,8 @@ namespace AutoVisaConcept.VM
                 //await Task.WhenAll(Persons.Select(e => e.OcrProceed().ContinueWith(t => Barvalue++)).ToArray());
                 //Persons.Select(e => e.OcrProceed().ContinueWith(t => Barvalue++)).ToArray();
                 Parallel.ForEach(Persons,async (Person current)=>  { await current.OcrProceed(); });
-
-
+                MessageBox.Show("Проверьте корректность данных");
+                //
             }
         }
 
