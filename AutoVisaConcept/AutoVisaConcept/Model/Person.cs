@@ -1,5 +1,7 @@
 ﻿using IronOcr;
 using Npgsql;
+using OpenQA.Selenium;
+using OpenQA.Selenium.Chrome;
 using System;
 using System.Collections.Generic;
 using System.Data.SQLite;
@@ -15,7 +17,8 @@ namespace AutoVisaConcept.Model
     class Person : DependencyObject
     {
 
-        SelenuimVisa SelenuimActions;
+        IWebDriver _driver;
+        //SelenuimVisa 
 
         SQLiteConnection connection;
 
@@ -78,12 +81,12 @@ namespace AutoVisaConcept.Model
 
 
 
-        public Person(string FilePath1, SQLiteConnection connection1 ,SelenuimVisa selenium_instance)
+        public Person(string FilePath1, SQLiteConnection connection1 , IWebDriver selenium_instance)
         {
             //FilePath = FilePath1;
             Application.Current.Dispatcher.Invoke(() => this.FilePath = FilePath1);
             connection = connection1;
-            SelenuimActions = selenium_instance;
+            _driver = selenium_instance;
         }
 
        
@@ -112,7 +115,7 @@ namespace AutoVisaConcept.Model
                             //Patronomic = temp1[1].Split('<')[1];
                             Application.Current.Dispatcher.Invoke(() => Patronomic = temp1[1].Split('<')[1]);
                         }
-                        else if (aLine.Length < 100)//((aLine.Contains("МУЖ") || aLine.Contains("ЖЕН")))//&&(Regex.Matches(aLine, "\\d\\d.\\d\\d.\\d\\d\\d\\d").Count!=0))
+                        else if (aLine.Length < 100)
                         {
                             try
                             {
@@ -152,10 +155,50 @@ namespace AutoVisaConcept.Model
 
             });
 
-        public async Task Get_visa()
-             => await Task.Run(() =>
+        public async Task Get_visa(int i)
+            // => await Task.Run(() =>
              {
-                 SelenuimActions.get_visa();
-             });
+                 String a = "window.open('https://videx.diplo.de/videx/desktop/index.html#start','_blank');";
+                 ((IJavaScriptExecutor)_driver).ExecuteScript(a);
+                 
+                 IList<string> tabs = new List<string>(_driver.WindowHandles);
+
+                 _driver.SwitchTo().Window(tabs[i+1]);
+
+                 var inputs = _driver.FindElements(By.TagName("input"));
+                 foreach (IWebElement element in inputs)
+                 {
+                     if ((element.GetAttribute("id")).Contains("lastname"))
+                     {
+                         try
+                         {
+                             element.Click();
+                             element.SendKeys(Application.Current.Dispatcher.Invoke(() => Surname));
+                         }
+                         catch { }
+                     }
+
+                     else if ((element.GetAttribute("id")).Contains("firstname"))
+                     {
+                         try
+                         {
+                             element.Click();
+                             element.SendKeys(Application.Current.Dispatcher.Invoke(() => Name));
+                         }
+                         catch { }
+                     }
+
+                     else if ((element.GetAttribute("id")).Contains("date-of-birth"))
+                     {
+                         try
+                         {
+                             element.Click();
+                             element.SendKeys(Application.Current.Dispatcher.Invoke(() => Birthdate));
+                         }
+                         catch { }
+                     }
+
+                 }
+             }//);
     }
 }

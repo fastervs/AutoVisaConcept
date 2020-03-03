@@ -18,7 +18,9 @@
                 <DataGridTextColumn Header="Номер паспорта"  Binding="{Binding Passport_id}"/>
             </DataGrid.Columns>
         </DataGrid>
-        <ComboBox x:Name="comboBox" HorizontalAlignment="Left" Margin="827,50,0,0" VerticalAlignment="Top" Width="140"/>
+        <ComboBox x:Name="comboBox" HorizontalAlignment="Left" Margin="827,50,0,0" VerticalAlignment="Top" Width="140">
+            <TextBlock>Паспорт</TextBlock>
+        </ComboBox>
         <Button x:Name="button" Content="Загрузить сканы" Command="{Binding Download}" HorizontalAlignment="Left" Margin="681,41,0,0" VerticalAlignment="Top" Width="94" Height="31"/>
         <Button x:Name="button1" Content="Внести данные" Command="{Binding Proceed_data}" HorizontalAlignment="Left" Margin="873,96,0,0" VerticalAlignment="Top" Width="94" Height="27"/>
         <Button x:Name="button2" Content="Удалить" HorizontalAlignment="Left" Margin="827,148,0,0" VerticalAlignment="Top" Width="75"/>

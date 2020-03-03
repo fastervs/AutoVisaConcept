@@ -15,6 +15,8 @@ using System.Runtime.CompilerServices;
 using Npgsql;
 using System.Data.SQLite;
 using System.Windows;
+using OpenQA.Selenium;
+using OpenQA.Selenium.Chrome;
 
 namespace AutoVisaConcept.VM
 {
@@ -32,7 +34,10 @@ namespace AutoVisaConcept.VM
 
         private string dbFileName="Persons.sqlite";
 
-        SelenuimVisa SelenuimActions=new SelenuimVisa();
+        IWebDriver _driver;
+
+        ChromeOptions options = new ChromeOptions();
+
 
         private readonly object _urlsLock = new object();
 
@@ -51,11 +56,17 @@ namespace AutoVisaConcept.VM
 
         public Repository()
         {
-            //
+            
             Persons = new ObservableCollection<Person>();
             BindingOperations.EnableCollectionSynchronization(Persons, _urlsLock);
+            _driver = new ChromeDriver(Environment.CurrentDirectory, options);
             ////////////////////////////////////////////////////////////////////////////
             db_handle();
+        }
+
+        ~Repository()
+        {
+            _driver.Quit();
         }
 
         void db_handle()
@@ -89,35 +100,32 @@ namespace AutoVisaConcept.VM
             openFileDialog.Multiselect = true;
             if (openFileDialog.ShowDialog() == true)
             {
-               // Parallel.ForEach(openFileDialog.FileNames,(string filepath)=>  { temp = new Person(filepath);
-                    //temp.OcrProceed1();
-                    //Persons.Add(temp);
-                //});
-                //await Task.Run(OcrProceed());
-                
+               
                 foreach (var strr in openFileDialog.FileNames)
                 {
-                    //temp = new Person(strr);
-                    //temp.OcrProceed();
-                    // Persons.Add(temp);
-                    //OcrProceed(File);
-                    temp = new Person(strr,connection,SelenuimActions);
+                    
+                    temp = new Person(strr,connection,_driver);
                     Persons.Add(temp);
                     
                 }
-                //await Task.WhenAll(Persons.Select(e => e.OcrProceed().ContinueWith(t => Barvalue++)).ToArray());
-                //Persons.Select(e => e.OcrProceed().ContinueWith(t => Barvalue++)).ToArray();
+                //Для столь процессорозависимой задачи количество потоков равно количеству потоков процессора
                 Parallel.ForEach(Persons,async (Person current)=>  { await current.OcrProceed(); });
-                MessageBox.Show("Проверьте корректность данных");
-                //
+                MessageBox.Show("Проверьте корректность данных" +
+                    " после завершения и измените их в таблице при необходимости");
+                
             }
         }
 
         public async Task Proceed()
         {
             Persons.Select(e => e.Add_todb()).ToArray();
-            Parallel.ForEach(Persons, async (Person current) => { await current.Get_visa(); });
-            
+            //Parallel.ForEach(Persons, async (Person current) => { await current.Get_visa(Persons.IndexOf(current));
+            //}); 
+            //chrome driver не может асинхронно работать с каждым окном браузера
+            //В связи с чем не для тестового варианта необходимо масштабировать драйверы вместе с браузерами
+
+            Persons.Select(e => e.Get_visa(Persons.IndexOf(e))).ToArray();
+
         }
 
 
